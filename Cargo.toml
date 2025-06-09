@@ -1,0 +1,21 @@
+[package]
+name = "risc0-proof-verifier"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = "0.20.1"
+bincode = "1.3.3"
+thiserror = "1.0"
+anyhow = "1.0"
+
+[dev-dependencies]
+tempfile = "3.8"
+
+[[example]]
+name = "generate_example"
+path = "examples/generate_example.rs"
+
+[[example]]
+name = "verify_example"
+path = "examples/verify_example.rs" 

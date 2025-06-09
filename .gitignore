@@ -1,0 +1,5 @@
+/target/
+/guest/target/
+test_files/fib.proof
+test_files/fib.method_id
+*.elf
