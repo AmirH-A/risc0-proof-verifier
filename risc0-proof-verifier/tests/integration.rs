@@ -89,30 +89,24 @@ fn test_verify_proof_with_method_id_invalid_verification() {
 
 #[test]
 fn test_verify_valid_proof() {
-    // Create a temporary directory for our test files
     let temp_dir = tempdir().unwrap();
     let proof_path = temp_dir.path().join("valid.proof");
     let method_id_path = temp_dir.path().join("valid.method_id");
 
-    // Create an executor environment
     let env = ExecutorEnv::builder()
         .add_input(&b"Hello, RISC0!"[..])
         .build()
         .unwrap();
 
-    // Get the method ID from the guest program
     let method_id = risc0_zkvm::sha::Digest::from_str("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
 
-    // Generate the proof
     let prover = default_prover();
     let receipt = prover.prove(env, include_bytes!("../guest/target/riscv32im-risc0-zkvm-elf/release/guest")).unwrap();
 
-    // Save the proof and method ID to files
     let proof_bytes = bincode::serialize(&receipt).unwrap();
     File::create(&proof_path).unwrap().write_all(&proof_bytes).unwrap();
     File::create(&method_id_path).unwrap().write_all(method_id.as_bytes()).unwrap();
 
-    // Verify the proof
     let result = verify_proof_files(&proof_path, &method_id_path);
     println!("Verification result: {:?}", result);
     assert!(result.is_ok());
