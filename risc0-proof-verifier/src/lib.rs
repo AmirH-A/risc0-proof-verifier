@@ -23,6 +23,8 @@ pub fn verify_proof_with_method_id(
     let receipt: Receipt = bincode::deserialize(proof_bytes)
         .map_err(|e| VerificationError::ProofFormatError(format!("{e}")))?;
 
+    println!("Receipt: {:?}", receipt);
+
     receipt
         .verify(Digest::from(*method_id_bytes))
         .map_err(|e| VerificationError::ProofVerificationFailed(format!("{e}")))?;

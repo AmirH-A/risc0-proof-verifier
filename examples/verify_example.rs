@@ -2,20 +2,18 @@ use risc0_proof_verifier::{verify_proof_files, VerificationError};
 use std::fs;
 
 fn main() -> anyhow::Result<()> {
-    println!("Verifying example proof...");
+    println!("Verifying proof... for testi");
     
-    // Check if the files exist
-    if !fs::metadata("test_files/example.proof").is_ok() {
-        println!("Error: test_files/example.proof not found. Please run generate_example first.");
+    if !fs::metadata("test_files/proof.bin").is_ok() {
+        println!("Error: test_files/proof.bin not found.");
         return Ok(());
     }
-    if !fs::metadata("test_files/example.method_id").is_ok() {
-        println!("Error: test_files/example.method_id not found. Please run generate_example first.");
+    if !fs::metadata("test_files/method_id.bin").is_ok() {
+        println!("Error: test_files/method_id.bin not found.");
         return Ok(());
     }
 
-    // Verify the proof
-    let result = verify_proof_files("test_files/example.proof", "test_files/example.method_id");
+    let result = verify_proof_files("test_files/proof.bin", "test_files/method_id.bin");
     
     match result {
         Ok(()) => {
@@ -36,8 +34,6 @@ fn main() -> anyhow::Result<()> {
                 }
                 VerificationError::ProofVerificationFailed(msg) => {
                     println!("Proof verification failed: {}", msg);
-                    println!("\nNote: This is expected with the example proof as it uses dummy data.");
-                    println!("In a real application, you would use actual proofs and method IDs.");
                 }
             }
         }

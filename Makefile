@@ -9,7 +9,7 @@ test:
 	cargo test
 
 clean:
-	cargo clean
+	# cargo clean
 	rm -rf test_files
 
 example-generate:
@@ -18,10 +18,8 @@ example-generate:
 example-verify:
 	cargo run --bin verify_example
 
-# Run all examples
 examples: example-generate example-verify
 
-# Help command
 help:
 	@echo "Available commands:"
 	@echo "  make build          - Build the project"
