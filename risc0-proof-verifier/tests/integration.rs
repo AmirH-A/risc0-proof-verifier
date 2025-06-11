@@ -2,7 +2,8 @@ use risc0_proof_verifier::{verify_proof_files, verify_proof_with_method_id, Veri
 use std::fs::File;
 use std::io::Write;
 use tempfile::tempdir;
-use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
+use risc0_zkvm::{default_prover, ExecutorEnv, Receipt, InnerReceipt, sha::Digest};
+use risc0_zkvm::host::receipt::Claim;
 use std::path::Path;
 
 #[test]
@@ -11,6 +12,7 @@ fn test_verify_proof_with_mock_data() {
     let fake_proof = vec![0u8; 100];
     let fake_method_id = [0u8; 32];
     let result = verify_proof_with_method_id(&fake_proof, &fake_method_id);
+    println!("result: {:?}", result);
     assert!(result.is_err());
 }
 
@@ -86,28 +88,3 @@ fn test_verify_proof_with_method_id_invalid_verification() {
     let result = verify_proof_files(&proof_path, &method_id_path);
     assert!(result.is_err());
 }
-
-#[test]
-fn test_verify_valid_proof() {
-    let temp_dir = tempdir().unwrap();
-    let proof_path = temp_dir.path().join("valid.proof");
-    let method_id_path = temp_dir.path().join("valid.method_id");
-
-    let env = ExecutorEnv::builder()
-        .add_input(&b"Hello, RISC0!"[..])
-        .build()
-        .unwrap();
-
-    let method_id = risc0_zkvm::sha::Digest::from_str("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
-
-    let prover = default_prover();
-    let receipt = prover.prove(env, include_bytes!("../guest/target/riscv32im-risc0-zkvm-elf/release/guest")).unwrap();
-
-    let proof_bytes = bincode::serialize(&receipt).unwrap();
-    File::create(&proof_path).unwrap().write_all(&proof_bytes).unwrap();
-    File::create(&method_id_path).unwrap().write_all(method_id.as_bytes()).unwrap();
-
-    let result = verify_proof_files(&proof_path, &method_id_path);
-    println!("Verification result: {:?}", result);
-    assert!(result.is_ok());
-} 

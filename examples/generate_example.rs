@@ -1,26 +1,28 @@
 use bincode;
-use risc0_zkvm::{Receipt, sha::Digest};
+use risc0_zkvm::{Receipt, InnerReceipt, Journal, ReceiptClaim, MaybePruned, ExitCode};
 use std::fs;
-use std::path::Path;
 
 fn main() -> anyhow::Result<()> {
     println!("Generating example proof files...");
 
-    // Create test_files directory if it doesn't exist
     fs::create_dir_all("test_files")?;
 
-    // Create a simple receipt (this is just for demonstration)
-    let receipt = Receipt::new(
-        Digest::from([0u8; 32]),
-        Digest::from([0u8; 32]),
-        vec![],
-    );
+    let mock_receipt = Receipt {
+        inner: InnerReceipt::Fake {
+            claim: ReceiptClaim {
+                pre: MaybePruned::Pruned(risc0_zkvm::sha::Digest::from([0u8; 32])),
+                post: MaybePruned::Pruned(risc0_zkvm::sha::Digest::from([0u8; 32])),
+                exit_code: ExitCode::Halted(0),
+                input: risc0_zkvm::sha::Digest::from([0u8; 32]),
+                output: MaybePruned::Pruned(risc0_zkvm::sha::Digest::from([0u8; 32])),
+            },
+        },
+        journal: Journal::new(vec![]),
+    };
 
-    // Save the proof
-    let proof_bytes = bincode::serialize(&receipt)?;
+    let proof_bytes = bincode::serialize(&mock_receipt)?;
     fs::write("test_files/example.proof", &proof_bytes)?;
 
-    // Create a dummy method ID (32 bytes of zeros)
     let method_id = [0u8; 32];
     fs::write("test_files/example.method_id", &method_id)?;
 

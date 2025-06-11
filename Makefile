@@ -13,10 +13,10 @@ clean:
 	rm -rf test_files
 
 example-generate:
-	cargo run --example generate_example
+	cargo run --bin generate_example
 
 example-verify:
-	cargo run --example verify_example
+	cargo run --bin verify_example
 
 # Run all examples
 examples: example-generate example-verify
